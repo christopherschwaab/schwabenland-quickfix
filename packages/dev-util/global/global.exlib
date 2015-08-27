@@ -1,0 +1,22 @@
+# Copyright 2012 Maxime Coste
+# Distributed under the terms of the GNU General Public License v2
+
+require gnu [[ suffix=gz ]]
+
+SUMMARY="GNU GLOBAL source code tag system"
+
+LICENCES="GPL-3"
+SLOT="0"
+MYOPTIONS="
+    doc
+"
+
+global_src_install() {
+    default
+    find ${IMAGE} -depth -type d -empty -exec rmdir {} \;
+    optionq doc && dohtml doc/global.html
+    insinto /etc
+    doins gtags.conf
+}
+
+export_exlib_phases src_install
