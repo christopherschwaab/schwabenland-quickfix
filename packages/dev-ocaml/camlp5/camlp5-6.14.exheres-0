@@ -20,7 +20,7 @@ DEPENDENCIES="
 
 BUGS_TO="fauxmight@nosocomia.com"
 
-DEFAULT_SRC_COMPILE_PARAMS=( world.opt )
+DEFAULT_SRC_COMPILE_PARAMS=( CAML_LD_LIBRARY_PATH="${WORK}/kernel/byterun/" world.opt )
 
 # This OCaml specific configure file behaves very unlike
 # 'normal' (read autotools) configure files. Options are in the

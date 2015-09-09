@@ -1,0 +1,59 @@
+# Copyright 2012-2013 Nicolas Braud-Santoni <nicolas+exherbo@braud-santoni.eu>
+# Distributed under the terms of the GNU General Public License v2
+
+export_exlib_phases src_configure src_install
+
+HOMEPAGE="http://coq.inria.fr/"
+SUMMARY="A proof assistant"
+DESCRIPTION="
+Coq is a formal proof management system.
+It provides a formal language to write mathematical definitions, executable
+ algorithms and theorems together with an environment for semi-interactive
+development of machine-checked proofs.
+"
+
+MY_PV=${PV/-p/pl}
+MY_PNV=${PN}-${MY_PV}
+
+LICENCES="LGPL-2.1"
+SLOT="0"
+MYOPTIONS="
+    gtk
+    (
+        camlp4
+        camlp5
+    ) [[ number-selected = exactly-one ]]
+"
+
+DEPENDENCIES="
+    build+run:
+        dev-lang/ocaml
+        gtk? ( dev-ocaml/lablgtk )
+        camlp4? ( dev-ocaml/camlp4 )
+        camlp5? ( dev-ocaml/camlp5[-strict] )
+"
+
+DEFAULT_SRC_CONFIGURE_PARAMS=(
+    -prefix /usr
+    -libdir /usr/$(exhost --target)/lib
+    -bindir /usr/$(exhost --target)/bin
+    -with-doc no
+    -arch "$(exhost --target)"
+    -opt
+)
+DEFAULT_SRC_COMPILE_PARAMS=( world )
+DEFAULT_SRC_INSTALL_PARAMS=( COQINSTALLPREFIX="${IMAGE}" )
+
+coq_src_configure() {
+    edo env CAML_LD_LIBRARY_PATH="${WORK}/kernel/byterun/" \
+      ./configure \
+        "${DEFAULT_SRC_CONFIGURE_PARAMS[@]}" \
+        $(option gtk "-lablgtkdir /usr/$(exhost --target)/lib/ocaml/lablgtk2/" "-coqide no") \
+        $(option camlp4 -usecamlp4) \
+        $(option camlp5 "-usecamlp5 -camlp5dir /usr/$(exhost --target)/lib/camlp5")
+}
+
+coq_src_install() {
+    default
+    rmdir /usr/$(exhost --target)/lib/user-contrib
+}
