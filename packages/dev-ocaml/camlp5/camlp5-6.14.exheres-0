@@ -1,0 +1,35 @@
+# Copyright 2009 A Frederick Christensen <fauxmight@nosocomia.com>
+# Distributed under the terms of the GNU General Public License v2
+
+SUMMARY="Preprocessor-pretty-printer of OCaml"
+
+HOMEPAGE="http://camlp5.gforge.inria.fr/"
+DOWNLOADS="http://camlp5.gforge.inria.fr/distrib/src/${PNV}.tgz"
+
+LICENCES="BSD-3"
+SLOT="0"
+PLATFORMS="~amd64 ~x86"
+MYOPTIONS="
+    strict [[ description = [ new sytax tree - breaks compatibility with older syntax tree ] ]]
+"
+
+DEPENDENCIES="
+    build+run:
+        dev-lang/ocaml
+"
+
+BUGS_TO="fauxmight@nosocomia.com"
+
+DEFAULT_SRC_COMPILE_PARAMS=( world.opt )
+
+# This OCaml specific configure file behaves very unlike
+# 'normal' (read autotools) configure files. Options are in the
+# form "--option value" rather than "--option=value"
+# (' ' instead of '=')
+src_configure() {
+    edo ./configure \
+        -prefix /usr \
+        -libdir /usr/$(exhost --target)/lib \
+        -bindir /usr/$(exhost --target)/bin \
+        -$(option strict strict transitional)
+}
