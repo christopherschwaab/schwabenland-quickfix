@@ -1,0 +1,56 @@
+# Copyright 2014 Markus Rothe
+# Distributed under the terms of the GNU General Public License v2
+
+require autotools [ supported_autoconf=[ 2.5 ] supported_automake=[ 1.13 ] ]
+require github [ user="jonls" tag="v${PV}" ]
+require systemd-service
+
+SUMMARY="Adjusts the color temperature of your screen according to your surroundings"
+HOMEPAGE="http://jonls.dk/redshift/"
+
+LICENCES="GPL-3"
+SLOT="0"
+PLATFORMS="~amd64"
+MYOPTIONS="
+    geoclue [[ description = [ use geoclue to get the current location ] ]]
+    gui [[ description = [ enable GUI status icon ] ]]
+    ( linguas: ar bg ca cs da de el es et eu fi fr gl he hi hr it ja ka lt nb nl pl pt_BR pt ru sv zh_CN )
+"
+
+DEPENDENCIES="
+    build:
+        dev-util/intltool
+        sys-devel/gettext
+    build+run:
+        dev-libs/glib
+        geoclue? ( gps/geoclue:2.0 )
+        gui? (
+            dev-lang/python[>=3.2]
+            dev-python/pyxdg
+            gnome-bindings/pygobject
+        )
+        x11-dri/libdrm
+        x11-libs/libX11
+        x11-libs/libXxf86vm
+        x11-libs/libxcb
+"
+
+BUGS_TO="markus@unixforces.net"
+
+AT_M4DIR=( m4 )
+
+DEFAULT_SRC_CONFIGURE_PARAMS=(
+    '--enable-drm'
+    '--enable-nls'
+    '--enable-randr'
+    '--enable-vidmode'
+    "--with-systemduserunitdir=${SYSTEMDUSERUNITDIR}"
+)
+DEFAULT_SRC_CONFIGURE_OPTION_ENABLES=( 'geoclue geoclue2' gui )
+
+src_prepare() {
+    default
+    edo intltoolize --force --copy --automake
+    edo autopoint --force
+    autotools_src_prepare
+}
