@@ -1,0 +1,36 @@
+# Copyright 2012 Kevin Decherf <kevin@kdecherf.com>
+# Distributed under the terms of the GNU General Public License v2
+
+require ant java github [ tag=v2.11.7 ]
+
+SUMMARY="Multi-paradigm programming language"
+HOMEPAGE="http://www.scala-lang.org"
+
+LICENCES="BSD"
+SLOT="0"
+MYOPTIONS=""
+
+ANT_SRC_COMPILE_PARAMS=( build-opt )
+ANT_SRC_TEST_PARAMS=( test )
+
+src_prepare() {
+    :
+}
+
+src_install() {
+    dodir /usr/share/${PNV}
+    edo cp -r "${WORK}"/dists/latest/* "${IMAGE}"/usr/share/${PNV}
+    dodir /usr/bin
+    dosym /usr{/share/${PNV},}/bin/scala
+    dosym /usr{/share/${PNV},}/bin/scaladoc
+    dosym /usr{/share/${PNV},}/bin/scalac
+    dosym /usr{/share/${PNV},}/bin/scalap
+    dosym /usr{/share/${PNV},}/bin/fsc
+    dodir /usr/share/man/man1
+    dosym /usr/share/{${PNV},}/man/man1/scala.1
+    dosym /usr/share/{${PNV},}/man/man1/scaladoc.1
+    dosym /usr/share/{${PNV},}/man/man1/scalac.1
+    dosym /usr/share/{${PNV},}/man/man1/scalap.1
+    dosym /usr/share/{${PNV},}/man/man1/fsc.1
+}
+
