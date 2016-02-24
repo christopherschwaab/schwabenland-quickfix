@@ -1,0 +1,32 @@
+# Copyright 2013 Niels Ole Salscheider
+# Distributed under the terms of the GNU General Public License v2
+
+SCM_REPOSITORY="http://llvm.org/git/libclc.git"
+SCM_REVISION="b518692b52a0bbdf9cf0e2167b9629dd9501abcd"
+require scm-git
+
+SUMMARY="libclc is an implementation of the library requirements of the OpenCL C programming language"
+HOMEPAGE="http://libclc.llvm.org/"
+
+LICENCES="|| ( UoI-NCSA MIT )"
+SLOT="0"
+PLATFORMS="~amd64 ~x86"
+MYOPTIONS=""
+
+DEPENDENCIES="
+    build:
+        dev-lang/python:*
+    build+run:
+        dev-lang/clang[>=3.7]
+        dev-lang/llvm[>=3.7]
+"
+
+src_configure()
+{
+    edo ./configure.py                                   \
+    --prefix=/usr                                        \
+    --includedir=/usr/$(exhost --target)/include         \
+    --libexecdir=/usr/$(exhost --target)/lib/clc         \
+    --pkgconfigdir=/usr/$(exhost --target)/lib/pkgconfig
+}
+
