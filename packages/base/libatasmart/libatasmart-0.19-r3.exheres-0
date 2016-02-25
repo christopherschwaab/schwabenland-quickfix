@@ -1,0 +1,24 @@
+# Copyright 2009 Saleem Abdulrasool <compnerd@compnerd.org>
+# Distributed under the terms of the GNU General Public License v2
+
+SUMMARY="A lean, small and clean implementation of an ATA S.M.A.R.T"
+HOMEPAGE="http://0pointer.de/blog/projects/being-smart.html"
+DOWNLOADS="http://0pointer.de/public/${PNV}.tar.xz"
+
+LICENCES="LGPL-2.1"
+SLOT="0"
+PLATFORMS="~amd64 ~x86"
+MYOPTIONS="
+    ( providers: eudev systemd ) [[ number-selected = exactly-one ]]
+"
+
+DEPENDENCIES="
+    build:
+        virtual/pkg-config[>=0.9.0]
+    build+run:
+        providers:eudev? ( sys-apps/eudev )
+        providers:systemd? ( sys-apps/systemd )
+"
+
+DEFAULT_SRC_CONFIGURE_PARAMS=( CC_FOR_BUILD=$(exhost --build)-gcc )
+
