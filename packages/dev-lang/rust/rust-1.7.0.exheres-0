@@ -1,0 +1,8 @@
+# Copyright 2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Distributed under the terms of the GNU General Public License v2
+
+# Get these from src/snapshots.txt
+require rust [ date="2015-12-18" rev="3391630" hash="97e2a5eb8904962df8596e95d6e5d9b574d73bf4" ]
+
+PLATFORMS="~amd64 ~x86"
+
