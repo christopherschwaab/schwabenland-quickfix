@@ -3,6 +3,8 @@
 
 require github [ user=rust-lang ]
 
+SCM_EXTERNAL_REFS="src/rust-installer:"
+
 SUMMARY="Rust's package manager that allows projects to declare their various dependencies, and ensures repeatable builds."
 HOMEPAGE="http://crates.io/"
 
@@ -24,32 +26,51 @@ DEPENDENCIES="
         dev-lang/rust
 "
 
-DOWNLOADS+="
-    platform:amd64? ( https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz )
-    platform:x86? ( https://static.rust-lang.org/cargo-dist/cargo-nightly-i686-unknown-linux-gnu.tar.gz )
+# TODO: I don't know how to tell what our current build arch is outside of
+# something crazy like src_fetch_extra so just fetch every possible arch.
+DOWNLOADS="
+    https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz
+    https://static.rust-lang.org/cargo-dist/cargo-nightly-i686-unknown-linux-gnu.tar.gz
 "
 
-src_prepare() {
-    local target=$(exhost --target)
-    export _HOST_PLATFORM=linux-${target%%-*}
-    echo $_HOST_PLATFORM
-    exit 1
+DEFAULT_SRC_COMPILE_PARAMS=( VERBOSE=1 )
 
-    ## Hijacked from ghc build by Santiago M. Mola, Ingmar Vanhassel, Markus Rothe
-    #if option bootstrap; then
-    #    case $(exhost --build) in
-    #        x86_64-pc-linux-gnu)
-    #            ld_suffix="-x86-64"
-    #        ;;
-    #        i686-pc-linux-gnu)
-    #            ld_suffix=""
-    #        ;;
-    #        *)
-    #            die "Host not supported"
-    #        ;;
-    #    esac
-    #    edo patchelf --set-interpreter "/usr/$(exhost --build)/lib/ld-linux${ld_suffix}.so.2" \
-    #                 "${WORKBASE}/rust-stage0/bin/rustc"
-    #fi
+src_unpack() {
+    default_src_unpack
+    scm_src_unpack
 }
 
+src_prepare() {
+    local build=$(exhost --build)
+    local ld_suffix=${build%%-*}
+    export CARGO_BIN="${WORKBASE}/cargo-nightly-${ld_suffix}-unknown-linux-gnu/cargo/bin/cargo"
+    edo patchelf \
+      --set-interpreter "/lib/ld-linux-${ld_suffix/_/-}.so.2" \
+      "$CARGO_BIN"
+}
+
+src_configure() {
+    local host_param=$(exhost --target)
+    local build_param=$(exhost --build)
+    econf \
+      --hates=host \
+      --hates=build \
+      --hates=bindir \
+      --hates=sbindir \
+      --hates=datarootdir \
+      --hates=docdir \
+      --hates=disable-dependency-tracking \
+      --hates=disable-silent-rules \
+      --hates=enable-fast-install \
+      --host=${host_param/pc/unknown} \
+      --build=${build_param/pc/unknown} \
+      --local-rust-root="/usr/$(exhost --build)" \
+      --local-cargo=$(option bootstrap "$CARGO_BIN" "/usr/$(exhost --build)")
+}
+
+src_compile() {
+    export VERBOSE=1
+    esandbox disable_net
+    default_src_compile
+    esandbox enable_net
+}
