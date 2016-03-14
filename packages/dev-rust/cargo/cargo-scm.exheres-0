@@ -1,0 +1,55 @@
+# Copyright 2016 Christopher Schwaab
+# Distributed under the terms of the GNU General Public License v2
+
+require github [ user=rust-lang ]
+
+SUMMARY="Rust's package manager that allows projects to declare their various dependencies, and ensures repeatable builds."
+HOMEPAGE="http://crates.io/"
+
+LICENCES="|| ( MIT Apache-2.0 )"
+SLOT="0"
+PLATFORMS="~x86 ~amd64"
+MYOPTIONS="
+    bootstrap
+"
+
+DEPENDENCIES="
+    build:
+        sys-devel/cmake
+        bootstrap? ( dev-util/patchelf )
+    build+run:
+        net-misc/curl
+        dev-libs/openssl
+        dev-lang/python
+        dev-lang/rust
+"
+
+DOWNLOADS+="
+    platform:amd64? ( https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz )
+    platform:x86? ( https://static.rust-lang.org/cargo-dist/cargo-nightly-i686-unknown-linux-gnu.tar.gz )
+"
+
+src_prepare() {
+    local target=$(exhost --target)
+    export _HOST_PLATFORM=linux-${target%%-*}
+    echo $_HOST_PLATFORM
+    exit 1
+
+    ## Hijacked from ghc build by Santiago M. Mola, Ingmar Vanhassel, Markus Rothe
+    #if option bootstrap; then
+    #    case $(exhost --build) in
+    #        x86_64-pc-linux-gnu)
+    #            ld_suffix="-x86-64"
+    #        ;;
+    #        i686-pc-linux-gnu)
+    #            ld_suffix=""
+    #        ;;
+    #        *)
+    #            die "Host not supported"
+    #        ;;
+    #    esac
+    #    edo patchelf --set-interpreter "/usr/$(exhost --build)/lib/ld-linux${ld_suffix}.so.2" \
+    #                 "${WORKBASE}/rust-stage0/bin/rustc"
+    #fi
+}
+
