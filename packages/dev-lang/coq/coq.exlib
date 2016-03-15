@@ -17,6 +17,7 @@ MY_PNV=${PN}-${MY_PV}
 
 LICENCES="LGPL-2.1"
 SLOT="0"
+RESTRICT="test"
 MYOPTIONS="
     gtk
     (
@@ -45,15 +46,14 @@ DEFAULT_SRC_COMPILE_PARAMS=( world )
 DEFAULT_SRC_INSTALL_PARAMS=( COQINSTALLPREFIX="${IMAGE}" )
 
 coq_src_configure() {
-    edo env CAML_LD_LIBRARY_PATH="${WORK}/kernel/byterun/" \
-      ./configure \
-        "${DEFAULT_SRC_CONFIGURE_PARAMS[@]}" \
-        $(option gtk "-lablgtkdir /usr/$(exhost --target)/lib/ocaml/lablgtk2/" "-coqide no") \
-        $(option camlp4 -usecamlp4) \
-        $(option camlp5 "-usecamlp5 -camlp5dir /usr/$(exhost --target)/lib/camlp5")
+    env CAML_LD_LIBRARY_PATH="${WORK}/kernel/byterun" ./configure \
+      "${DEFAULT_SRC_CONFIGURE_PARAMS[@]}" \
+      $(option gtk "-lablgtkdir /usr/$(exhost --target)/lib/ocaml/lablgtk2/" "-coqide no") \
+      $(option camlp4 -usecamlp4) \
+      $(option camlp5 "-usecamlp5 -camlp5dir /usr/$(exhost --target)/lib/camlp5")
 }
 
 coq_src_install() {
     default
-    rmdir /usr/$(exhost --target)/lib/user-contrib
+    rmdir "${IMAGE}/usr/$(exhost --target)/lib/user-contrib"
 }
