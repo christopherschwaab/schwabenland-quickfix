@@ -1,8 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # Copyright 2014 Nicolas Braud-Santoni <nicolas+exherbo@braud-santoni.eu>
 
-myexparam pv=${MY_PV:-$(ever replace 3 +)}
-require github [ user=ocaml tag=$(exparam pv) ]
+require github [ user=ocaml tag=$(ever replace 3 +) ]
 
 export_exlib_phases src_configure
 
@@ -28,14 +27,14 @@ DEPENDENCIES="
       dev-lang/ocaml[>=4.02.0]
 "
 
-DEFAULT_SRC_COMPILE_PARAMS=( -j1 )
-
-camlp4_src_configure() {
-    edo ./configure
-}
+DEFAULT_SRC_COMPILE_PARAMS=( -j1 all byte native )
 
 DEFAULT_SRC_INSTALL_PARAMS=(
-    BINDIR="/usr/$(exhost --target)/bin/"
-    LIBDIR="/usr/$(exhost --target)/lib/ocaml"
+  BINDIR="${IMAGE}/usr/$(exhost --target)/bin/"
+  LIBDIR="${IMAGE}/$(ocamlc -where)"
+  PKGDIR="${IMAGE}/$(ocamlc -where)"
 )
 
+camlp4_src_configure() {
+  edo ./configure
+}
