@@ -3,16 +3,16 @@
 
 require emacs
 
-PLATFORMS="~amd64 ~x86"
+PLATFORMS="~amd64 ~armv7 ~x86"
 
 DEPENDENCIES="
     build+run:
         dev-libs/gnutls[>=2.8]
 "
 
-#DEFAULT_SRC_PREPARE_PATCHES=( "${FILES}"/emacs-24.4-gnupg-2.1.patch )
-
 src_install() {
-    default
-    rmdir ${IMAGE}/usr/share/emacs/24.5/lisp/emacs-parallel
+    emacs_src_install
+
+    # Do not install empty directory
+    edo rmdir "${IMAGE}"/usr/share/emacs/24.5/lisp/emacs-parallel
 }
