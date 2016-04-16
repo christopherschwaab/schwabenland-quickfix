@@ -29,5 +29,6 @@ DEFAULT_SRC_CONFIGURE_TESTS=( '--with-cairo --without-cairo' )
 
 src_prepare() {
     edo sed -i "s~args\.extend(\['ldd~args\.extend(\['/usr/$(exhost --target)/bin/ldd~" giscanner/shlibs.py
+    edo sed -i "s~PYTHON_INCLUDES=\`\$PYTHON-config --includes\`~PYTHON_INCLUDES=\"-I$(python_get_incdir)\"~" configure
     default_src_prepare
 }
