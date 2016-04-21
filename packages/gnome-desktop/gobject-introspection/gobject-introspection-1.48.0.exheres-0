@@ -1,6 +1,12 @@
 # Copyright 2009 Sateem Abdulrasool <compnerd@compnerd.org>
 # Distributed under the terms of the GNU General Public License v2
 
+# NOTE:
+#   Python needs to dynamically load a library that gets built for the target
+#   so unfortunately the target's python binary is required rather than the
+#   build's which is set by python.exlib.
+#   As a hack we override PYTHON below which is probably prone to horrible
+#   breakage but seems to work okay for now.
 require gnome.org [ suffix=.tar.xz ] python [ blacklist=none multibuild=false ]
 
 SUMMARY="Tools for GIR"
@@ -30,5 +36,6 @@ DEFAULT_SRC_CONFIGURE_TESTS=( '--with-cairo --without-cairo' )
 src_prepare() {
     edo sed -i "s~args\.extend(\['ldd~args\.extend(\['/usr/$(exhost --target)/bin/ldd~" giscanner/shlibs.py
     edo sed -i "s~PYTHON_INCLUDES=\`\$PYTHON-config --includes\`~PYTHON_INCLUDES=\"-I$(python_get_incdir)\"~" configure
+    export PYTHON="/usr/$(exhost --target)/bin/python$(python_get_abi)"
     default_src_prepare
 }
