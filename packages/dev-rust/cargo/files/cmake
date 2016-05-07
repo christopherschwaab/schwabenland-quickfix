@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "*** Running cmake with CMAKE_AR=${CMAKE_AR} ***"
+/usr/host/bin/cmake -DCMAKE_AR=${CMAKE_AR} $@

@@ -5,12 +5,10 @@ require github [ user=rust-lang ]
 
 SCM_EXTERNAL_REFS="src/rust-installer:"
 
-SUMMARY="Rust's package manager that allows projects to declare their various dependencies, and ensures repeatable builds."
-HOMEPAGE="http://crates.io/"
-
 LICENCES="|| ( MIT Apache-2.0 )"
 SLOT="0"
-PLATFORMS="~x86 ~amd64"
+#PLATFORMS="~x86 ~amd64 ~arm" FIXME
+PLATFORMS="~amd64"
 MYOPTIONS="
     bootstrap
 "
@@ -27,13 +25,15 @@ DEPENDENCIES="
 "
 
 # TODO: I don't know how to tell what our current build arch is outside of
-# something crazy like src_fetch_extra so just fetch every possible arch.
-DOWNLOADS="
-    https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz
-    https://static.rust-lang.org/cargo-dist/cargo-nightly-i686-unknown-linux-gnu.tar.gz
-"
+# something crazy like src_fetch_extra.
+DOWNLOADS="https://static.rust-lang.org/cargo-dist/cargo-nightly-x86_64-unknown-linux-gnu.tar.gz"
 
-DEFAULT_SRC_COMPILE_PARAMS=( VERBOSE=1 )
+DEFAULT_SRC_COMPILE_PARAMS=(
+    VERBOSE=1
+    RUST_BACKTRACE=1
+    DEP_LIBGIT2_SYS_CMAKE_AR=$(exhost --build)-ar
+)
+#    LIBGIT2_SYS_USE_PKG_CONFIG=1
 
 src_unpack() {
     default_src_unpack
@@ -50,6 +50,12 @@ src_prepare() {
 }
 
 src_configure() {
+    # There doesn't seem to be a way to pass this to cmake other than on the
+    # cli.  Of course cargo doesn't seem to be at all flexible here so we just
+    # hijack the cmake binary.
+    export CMAKE_AR="/usr/$(exhost --build)/bin/$(exhost --build)-ar" \
+           PATH="${FILES}:${PATH}"
+    echo "**** PATH=$PATH"
     local host_param=$(exhost --target)
     local build_param=$(exhost --build)
     econf \
@@ -69,8 +75,10 @@ src_configure() {
 }
 
 src_compile() {
-    export VERBOSE=1
+    export CMAKE_AR="/usr/$(exhost --build)/bin/$(exhost --build)-ar" \
+           PATH="${FILES}:${PATH}"
+    echo "**** PATH=$PATH"
     esandbox disable_net
-    default_src_compile
+    emake
     esandbox enable_net
 }
