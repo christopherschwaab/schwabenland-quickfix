@@ -1,0 +1,9 @@
+# Copyright 2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+# Distributed under the terms of the GNU General Public License v2
+
+require rust [ date="2016-03-18" rev="235d774" hash="1273b6b6aed421c9e40c59f366d0df6092ec0397" ]
+
+PLATFORMS="~amd64 ~x86"
+
+DEFAULT_SRC_PREPARE_PATCHES=( "${FILES}"/6e9774f4bb70e2508113a91656d4938935ff2d09.patch )
+

@@ -1,8 +1,0 @@
-# Copyright 2013 Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
-# Distributed under the terms of the GNU General Public License v2
-
-# linux-i386 5f194aa7628c0703f0fd48adc4ec7f3cc64b98c7
-require rust [ date="2016-02-17" rev="4d3eebf" hash="d29b7607d13d64078b6324aec82926fb493f59ba" ]
-
-PLATFORMS="~amd64 ~x86"
-
