@@ -1,0 +1,12 @@
+diff --git a/../qemu-2.6.0.orig/hw/vfio/pci-quirks.c b/./hw/vfio/pci-quirks.c
+index 49ecf11..a8baaba 100644
+--- a/../qemu-2.6.0.orig/hw/vfio/pci-quirks.c
++++ b/./hw/vfio/pci-quirks.c
+@@ -1196,6 +1196,7 @@ void vfio_setup_resetfn_quirk(VFIOPCIDevice *vdev)
+         case 0x67B9:
+         case 0x67BA:
+         case 0x67BE:
++	case 0x6939:
+             vdev->resetfn = vfio_radeon_reset;
+             trace_vfio_quirk_ati_bonaire_reset(vdev->vbasedev.name);
+             break;
