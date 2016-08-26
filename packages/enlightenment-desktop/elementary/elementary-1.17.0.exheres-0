@@ -1,0 +1,45 @@
+# Copyright 2010 Paul Seidler
+# Copyright 2014 Thomas G. Anderson
+# Distributed under the terms of the GNU General Public License v2
+
+require enlightenment
+
+SUMMARY="Widget Set for enlightenment"
+
+LICENCES="LGPL-2.1"
+SLOT="0"
+PLATFORMS="~amd64"
+MYOPTIONS="
+    X
+    drm [[ description = [ Enable Direct Rendering Manager for hardware-based acceleration ] ]]
+    sdl
+"
+
+DEPENDENCIES="
+    build+run:
+        enlightenment-platform/efl[>=$(ever range 1-2)][drm?][sdl?][X?]
+"
+
+DEFAULT_SRC_CONFIGURE_PARAMS=(
+    '--with-eet=/usr/$(exhost --target)/bin/eet'
+    '--with-ejde-cc=/usr/$(exhost --target)/bin/ejde_cc'
+    '--with-elementary-codegen=/usr/$(exhost --target)/bin/'
+    '--with-eolian-gen=/usr/$(exhost --target)/bin/eolian_gen'
+    '--with-eolian-cxx=/usr/$(exhost --target)/bin/eolian_cxx'
+    '--with-eldbus-codegen=/usr/$(exhost --target)/bin/eldbus_codegen'
+    '--enable-quick-launch'
+)
+DEFAULT_SRC_CONFIGURE_OPTION_ENABLES+=(
+    'X ecore-x'
+    'sdl ecore-sdl'
+    'drm ecore-drm'
+)
+
+src_prepare() {
+    sed -i 's/_efl_with_binary=$(pkg-config/_efl_with_binary=$($PKG_CONFIG/g' configure
+}
+
+src_install() {
+    default
+    edo rmdir "${IMAGE}"/usr/share/${PN}/examples
+}
